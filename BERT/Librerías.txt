@@ -1,0 +1,6 @@
+pip install SpeechRecognition
+pip install PyAudio
+pip install Wave
+
+IMPORTANTE:
+Instalar todo en computadora, no utilizar ambientes, no utiliza mucha memoria
