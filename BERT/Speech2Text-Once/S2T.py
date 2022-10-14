@@ -5,7 +5,6 @@ import time
 import traceback
 import os
 from datetime import datetime
-# import signal
 
 try:
     r = sr.Recognizer()

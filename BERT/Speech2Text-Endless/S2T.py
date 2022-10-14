@@ -4,7 +4,7 @@ import sys
 import time
 import traceback
 import os
-# import signal
+from datetime import datetime
 
 try:
     r = sr.Recognizer()
@@ -14,6 +14,7 @@ try:
     stream = sr.AudioFile(filename)
     antText = ''
     finalText = ''
+    waitthr = 0
 
     while True:
         print('Procesando audio...',end='')
@@ -26,25 +27,32 @@ try:
                 print(' Siga hablando...')
                 antText = text
             else:
-                # finalText += " " + text
-                # print(finalText)
+                p.terminate()
                 print('')
                 print(text)
                 antText = ''
-                p.terminate()
+                #Aquí se envia texto
+                with open(datetime.now().strftime("%d_%m_%Y_%H_%M_%S")+'.txt', 'w') as f:
+                    f.write(text)
                 p.wait()
                 # os.rename(filename,text+'.wav')
                 os.remove(filename)
                 p = subprocess.Popen([sys.executable, "VoiceRecorder.py"]) 
                 time.sleep(4)
         except sr.UnknownValueError:
-            print('')
-            print('Esperando dictado...')
-            p.terminate()
-            p.wait()
-            os.remove(filename)
-            p = subprocess.Popen([sys.executable, "VoiceRecorder.py"]) 
-            time.sleep(4)
+            if waitthr < 5:
+                waitthr += 1
+                print('')
+                print('Esperando dictado...')
+                p.terminate()
+                p.wait()
+                os.remove(filename)
+                p = subprocess.Popen([sys.executable, "VoiceRecorder.py"]) 
+                time.sleep(4)
+            else:
+                print('')
+                print('Espera rebasada, terminando conversación.')
+                raise(KeyboardInterrupt)
         except sr.RequestError as e:
             print('')
             print('Problema de conexión...')
