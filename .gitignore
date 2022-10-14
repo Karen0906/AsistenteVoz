@@ -10,6 +10,8 @@
 
 # production
 /build
+BERT/*.txt
+BERT/*.wav
 
 # misc
 .DS_Store
