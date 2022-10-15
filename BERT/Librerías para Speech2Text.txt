@@ -1,6 +1,8 @@
 pip install SpeechRecognition
 pip install PyAudio
 pip install Wave
+pip install transformers
+pip3 install torch torchvision torchaudio
 
 IMPORTANTE:
 Instalar todo en computadora, no utilizar ambientes, no utiliza mucha memoria
