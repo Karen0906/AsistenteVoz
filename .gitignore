@@ -24,3 +24,4 @@ yarn-error.log*
 
 BERT/*/*.txt
 BERT/*/*.wav
+BERT/*/__pycache__
