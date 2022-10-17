@@ -45,7 +45,7 @@ def S2T():
                     time.sleep(4)
                 else:
                     print('')
-                    print('Espera rebasada, terminando conversación.')
+                    print('Espera rebasada.')
                     p.terminate()
                     p.wait()
                     os.remove(filename)
