@@ -4,6 +4,8 @@ pip install Wave
 pip install transformers
 pip3 install torch torchvision torchaudio
 pip install tf-nightly
+pip install sounddevice
+pip install soundfile
 
 IMPORTANTE:
 Instalar todo en computadora, no utilizar ambientes, no utiliza mucha memoria
