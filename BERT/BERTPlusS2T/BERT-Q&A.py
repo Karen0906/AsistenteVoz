@@ -16,8 +16,7 @@ nlp = pipeline('question-answering', model=model, tokenizer=tokenizer)
 
 def pregunta_respuesta(contexto, nlp):
 
-  #Loop preguntas-respuestas:
-  while True:
+    #Loop preguntas-respuestas:
     global report
     pregunta = '¿'+S2T()+'?'
     if pregunta != 'No speech detected ¡!¿?':
@@ -29,8 +28,7 @@ def pregunta_respuesta(contexto, nlp):
 
 def pregunta_respuesta_inv(pregunta, nlp,ask=True):
 
-  #Loop preguntas-respuestas:
-  while True:
+    #Loop preguntas-respuestas:
     if ask:
         print(pregunta)
     contexto = S2T()
@@ -84,11 +82,11 @@ if __name__ == '__main__':
                     report += [['¿Datos correctos según sistema?:','no']]
             else:
                 continue
+        report += [['Usuario hace preguntas al sistema']]
+        contexto = 'La fecha de entrega tu pedido depende de diversos factores. Si tu pedido es nacional, se entregará en un plazo de entre 24 y 48 horas. Si tu pedido es importado, el proveedor debe proporcionar una fecha de entrega que puede ir desde una semana hasta 2 meses dependiendo de las políticas de importación y exportación de ambos paises.'    
         while True:
-            report += [['Usuario hace preguntas al sistema']]
-            contexto = 'La fecha de entrega tu pedido depende de diversos factores. Si tu pedido es nacional, se entregará en un plazo de entre 24 y 48 horas. Si tu pedido es importado, el proveedor debe proporcionar una fecha de entrega que puede ir desde una semana hasta 2 meses dependiendo de las políticas de importación y exportación de ambos paises.'
             print('¿En qué podemos servirle?')
-            print(pregunta_respuesta(contexto,nlp))
+            print(pregunta_respuesta(contexto,nlp))            
             while True:
                 respuesta = pregunta_respuesta_inv('¿Fué su respuesta correcta?',nlp).split(' ')[0]
                 if not respuesta.lower() in ['si','sí','no']:
@@ -107,6 +105,8 @@ if __name__ == '__main__':
                 print('Hasta luego, espero hayamos podido ayudarlo...')
                 report += [['Sale Usuario, fin de conversación']]
                 break
+            else:
+                report += [['Usuario hace más preguntas al sistema']]
 
     except KeyboardInterrupt:
         print('Estimado cliente, debido a que no logramos entenderlo, lo enviaremos con un asistente humano, disculpe las molestias...')
