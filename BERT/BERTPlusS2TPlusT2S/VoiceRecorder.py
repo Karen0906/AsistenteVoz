@@ -15,7 +15,9 @@ filename = "stream.wav"
  
 # Create an interface to PortAudio
 pa = pyaudio.PyAudio() 
- 
+
+T2S('Escuchando')
+
 stream = pa.open(format=sample_format, channels=chanels,
                  rate=smpl_rt, input=True,
                  frames_per_buffer=chunk)
@@ -24,8 +26,6 @@ sf = wave.open(filename, 'wb')
 sf.setnchannels(chanels)
 sf.setsampwidth(pa.get_sample_size(sample_format))
 sf.setframerate(smpl_rt)
-
-T2S('Escuchando')
 
 try:
     # Store data in chunks

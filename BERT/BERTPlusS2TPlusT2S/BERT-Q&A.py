@@ -48,20 +48,20 @@ Users = {'Jorge Iglesias': 'A01653261'}
 if __name__ == '__main__':
     report += [['Usuario ingresa al sistema']]
     try:
-        T2S('Bienvenido a nuestro sistema de asistente, primero preguntaremos por sus datos personales para saber si está en el sistema.')
+        T2S('Bienvenido a nuestro sistema de asistente virtual, primero preguntaremos por sus datos personales para saber si está registrado en el sistema. Tome en cuenta que solo lo escuchamos cuando se dice la palabra "Escuchando".')
         while True:
-            nombreU = pregunta_respuesta_inv('¿Cómo se llama en el sistema?',nlp)
+            nombreU = pregunta_respuesta_inv('¿Cuál es su nombre registrado en el sistema?',nlp)
             report += [['Nombre de usuario ingresado:',nombreU]]
             while True:
-                IdU = pregunta_respuesta_inv('¿Cual es su matrícula? (Solo número)',nlp)
+                IdU = pregunta_respuesta_inv('¿Cual es su matrícula? Solo el número.',nlp)
                 IdU = ''.join(IdU.split(' '))
                 if checkInt(IdU):
                     IdU = 'A'+IdU
                     break
                 else:
-                    T2S('Texto recibido contiene caracteres y no solo número, intente de nuevo...')
+                    T2S('Texto recibido contiene caracteres y no solo número, intente de nuevo.')
             report += [['Matrícula:',IdU]]
-            T2S('Hola ' + nombreU + ', su matrícula es: '+ IdU + ', ¿Es la información ingresada correcta? (Diga si o no)')
+            T2S('Hola ' + nombreU + ', su matrícula es: '+ IdU + ', ¿Es la información ingresada correcta? Solo diga si o no.')
             while True:
                 respuesta = pregunta_respuesta_inv('Sólamente dijo sí o no?',nlp,False).split(' ')[0]
                 if not respuesta.lower() in ['si','sí','no']:
@@ -76,10 +76,10 @@ if __name__ == '__main__':
                         report += [['¿Datos correctos según sistema?:','sí']]
                         break
                     else:
-                        T2S('No se encontraron sus datos en nuestra base de datos o son incorrectos, intente de nuevo')
+                        T2S('No se encontraron sus datos en nuestra base de datos o son incorrectos, intente de nuevo.')
                         report += [['¿Datos correctos según sistema?:','no']]
                 except:
-                    T2S('No se encontraron sus datos en nuestra base de datos o son incorrectos, intente de nuevo')
+                    T2S('No se encontraron sus datos en nuestra base de datos o son incorrectos, intente de nuevo.')
                     report += [['¿Datos correctos según sistema?:','no']]
             else:
                 continue
@@ -89,7 +89,7 @@ if __name__ == '__main__':
             T2S('¿En qué podemos servirle?')
             T2S(pregunta_respuesta(contexto,nlp))            
             while True:
-                respuesta = pregunta_respuesta_inv('¿Fué su respuesta correcta?',nlp).split(' ')[0]
+                respuesta = pregunta_respuesta_inv('¿Nuestra respuesta le ayudó a resolver su problema?',nlp).split(' ')[0]
                 if not respuesta.lower() in ['si','sí','no']:
                     T2S('No entendimos su respuesta, solo diga sí o no')
                 else:
@@ -103,15 +103,15 @@ if __name__ == '__main__':
                     break
             report += [['¿Sigue usuario preguntando?:',respuesta]]
             if respuesta.lower() == 'no':
-                T2S('Hasta luego, espero hayamos podido ayudarlo...')
+                T2S('Hasta luego, esperamos haber sido de ayuda...')
                 report += [['Sale Usuario, fin de conversación']]
                 break
             else:
                 report += [['Usuario hace más preguntas al sistema']]
 
     except KeyboardInterrupt:
-        T2S('Estimado cliente, debido a que no logramos entenderlo, lo enviaremos con un asistente humano, disculpe las molestias...')
-        report += [['Fin de conversación en asistente virtual']]
+        T2S('Estimado cliente, debido a que no logramos entenderlo, lo enviaremos con un asistente humano, disculpe las molestias')
+        report += [['Fin de conversación con asistente virtual']]
     finally:    
         with open(datetime.now().strftime("%d_%m_%Y_%H_%M_%S")+'.txt', 'w') as f:
             for phrase in report:

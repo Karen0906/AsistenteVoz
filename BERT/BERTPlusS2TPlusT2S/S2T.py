@@ -11,11 +11,10 @@ def S2T():
         r = sr.Recognizer()
         filename = "stream.wav"
         p = subprocess.Popen([sys.executable, "VoiceRecorder.py"]) 
-        time.sleep(7)
+        time.sleep(6+2)
         stream = sr.AudioFile(filename)
         antText = ''
         waitthr = 0
-
         while True:
             with stream as source:
                 # r.adjust_for_ambient_noise(source)
@@ -38,7 +37,7 @@ def S2T():
                     p.wait()
                     os.remove(filename)
                     p = subprocess.Popen([sys.executable, "VoiceRecorder.py"]) 
-                    time.sleep(7)
+                    time.sleep(6)
                 else:
                     T2S('Espera rebasada.')
                     p.terminate()
@@ -51,7 +50,8 @@ def S2T():
                 p.wait()
                 os.remove(filename)
                 p = subprocess.Popen([sys.executable, "VoiceRecorder.py"]) 
-                time.sleep(7)
+                time.sleep(6)
+                
     except KeyboardInterrupt:
         p.terminate()
         dp = subprocess.Popen([sys.executable,'Delete_all.py'])
