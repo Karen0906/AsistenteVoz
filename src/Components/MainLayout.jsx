@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import logo from '../Assets/logo.svg';
 
 function App() {
   return (
@@ -6,7 +7,7 @@ function App() {
       <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
-                <img src="../Assets/logo.png" width="30" height="24"/>
+                <img src={logo} width="100" height="60"/>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
