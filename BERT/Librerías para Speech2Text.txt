@@ -7,6 +7,7 @@ pip install tf-nightly
 pip install sounddevice
 pip install soundfile
 pip install gtts
+pip install gensim
 
 IMPORTANTE:
 Instalar todo en computadora, no utilizar ambientes, no utiliza mucha memoria
