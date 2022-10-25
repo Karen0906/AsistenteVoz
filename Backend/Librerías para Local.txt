@@ -14,6 +14,13 @@ pip install tf-nightly
 pip install sounddevice
 pip install soundfile
 pip install gtts
+pip install -U scikit-learn
+pip install regex
+pip install spacy
+pip install es-core-news-sm
+pip install yellowbrick
+
+Instalar GenSim
 pip install gensim==3.8.1
 Si sale warning con gensim sobre compilador C hacer:
 con Visual Studio descargar:
