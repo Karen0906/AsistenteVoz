@@ -24,8 +24,12 @@ function App() {
                     </li>
                 </ul>
                 <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <button class="btn btn-outline-info mx-1" type="submit">Home</button>
+                    {/* <input class="form-control mx-1" type="search" placeholder="Search" aria-label="Search"/> */}
+                    <button class="btn btn-outline-info mx-1" type="submit">Profile</button>
+                    <button class="btn btn-outline-info mx-1" type="submit">Login</button>
+                    <button class="btn btn-outline-info mx-1" type="submit">Sign up</button>
+
                 </form>
                 </div>
             </div>
