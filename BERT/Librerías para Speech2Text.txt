@@ -1,6 +1,10 @@
+Leer TODO primero
+
 Usar Python 3.9.13 o última versión de Python 3.9
+IMPORTANTE: Verificar que la versión instalada de Python sea con 64 bits y no con 32 bits
 No se olviden cambiar el path también
 
+Instalar librerias:
 pip install SpeechRecognition
 pip install PyAudio
 pip install Wave
