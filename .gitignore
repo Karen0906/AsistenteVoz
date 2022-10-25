@@ -22,6 +22,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-BERT/*/*.txt
-BERT/*/*.wav
-BERT/*/__pycache__
+Backend/*/*.txt
+Backend/*/*.wav
+Backend/*/__pycache__
