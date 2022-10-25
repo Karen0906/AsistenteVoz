@@ -25,3 +25,8 @@ yarn-error.log*
 Backend/*/*.txt
 Backend/*/*.wav
 Backend/*/__pycache__
+Backend/Clasificador/modelo/*.model
+Backend/Clasificador/modelo/*.npy
+Backend/Clasificador/modelo/*.zip
+Backend/Clasificador/modelo/*.txt
+!Backend/Clasificador/LEER - Intrucciones para instalar modelo.txt
