@@ -11,9 +11,9 @@ function HomeScreen() {
         <p>
         </p>
       </div>
-      <div class='row gx-1'>
+      <div class='row gx-1 mt-5'>
         <div class='col-auto'>
-          <Card border='warning' style={{ width: '15rem', height:'12rem'}} className='border border-4'>
+          <Card border='warning' style={{ width: '15rem', height:'14rem'}} className='border border-4'>
                 <Card.Body>
                   <Card.Title>1. Selecciona</Card.Title>
                   <Card.Text mb-3>
@@ -24,7 +24,7 @@ function HomeScreen() {
               <br />
         </div>
         <div class='col-auto'>
-            <Card border='warning' style={{ width: '15rem', height:'12rem' }} className='border border-4'>
+            <Card border='warning' style={{ width: '15rem', height:'14rem' }} className='border border-4'>
                   <Card.Body>
                     <Card.Title >2. Aporta</Card.Title>
                     <Card.Text mb-3>
@@ -36,7 +36,7 @@ function HomeScreen() {
         </div>
   {/* <div class='w-100'></div> */}
         <div class='col-auto'>
-          <Card border='warning' style={{ width: '15rem', height:'12rem' }} className='border border-4'>
+          <Card border='warning' style={{ width: '15rem', height:'14rem' }} className='border border-4'>
                 <Card.Body>
                   <Card.Title>3. Revisa</Card.Title>
                   <Card.Text mb-3>
@@ -46,7 +46,7 @@ function HomeScreen() {
               </Card>
               <br />
         </div>
-        <div class='col-auto'>  <Card border='warning' style={{ width: '15rem', height:'12rem' }} className='border border-4'>
+        <div class='col-auto'>  <Card border='warning' style={{ width: '15rem', height:'14rem' }} className='border border-4'>
           <Card.Body>
             <Card.Title>4. Ejecuta</Card.Title>
             <Card.Text mb-3>
