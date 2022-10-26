@@ -16,12 +16,25 @@ with open('DB.csv', 'r', encoding='UTF-8', newline='') as f:
 
 l = [re.sub('[\\n]','',value[0]) for value in data]
 
+l = [i.split('. ') for i in l]
+
+nl = []
+
+for i in l:
+  nl += i
+
 nlp = spacy.load('es_core_news_sm')
 
 tokensl = []
-for corpus in l:
+for corpus in nl:
   doc = nlp(corpus)
   tokensl.append([t.lemma_.lower().split(' ')[0] for t in doc if t.orth_.isalpha() and not t.is_punct | t.is_stop])
+
+c = 0
+for j in [i for i,le in enumerate(tokensl) if len(le) == 0]:
+  nl.pop(j-c)
+  tokensl.pop(j-c)
+  c += 1
 
 path = '/'.join(os.path.dirname(__file__).split('\\')[:-1])
 
@@ -67,10 +80,9 @@ plt.clf()
 pca = PCA(n_components=0.95).fit(avgwvt)
 reduced = pca.transform(avgwvt)
 
-
 kmmodel = SpectralClustering()
 visualizer = KElbowVisualizer(
-    kmmodel, k=(2,20)
+    kmmodel, k=(2,avgwvt.shape[0])
 )
 
 visualizer.fit(reduced)
@@ -81,4 +93,4 @@ kmmodel = SpectralClustering(visualizer.elbow_value_).fit(reduced)
 with open('DBN.csv', 'w', newline='') as f:
     # using csv.writer method from CSV package
     write = csv.writer(f)
-    write.writerows([list(i) for i in zip(kmmodel.labels_.tolist(),l)])
+    write.writerows([list(i) for i in zip(kmmodel.labels_.tolist(),nl)])
