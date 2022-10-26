@@ -8,7 +8,7 @@ import os
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from yellowbrick.cluster import KElbowVisualizer
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, SpectralClustering
 
 with open('DB.csv', 'r', encoding='UTF-8', newline='') as f:
     reader = csv.reader(f)
@@ -68,11 +68,17 @@ pca = PCA(n_components=0.95).fit(avgwvt)
 reduced = pca.transform(avgwvt)
 
 
-model = KMeans()
+kmmodel = SpectralClustering()
 visualizer = KElbowVisualizer(
-    model, k=(2,20)
+    kmmodel, k=(2,20)
 )
 
 visualizer.fit(reduced)
 visualizer.show(outpath="OptimalK.png")
 
+kmmodel = SpectralClustering(visualizer.elbow_value_).fit(reduced)
+
+with open('DBN.csv', 'w', newline='') as f:
+    # using csv.writer method from CSV package
+    write = csv.writer(f)
+    write.writerows([list(i) for i in zip(kmmodel.labels_.tolist(),l)])
