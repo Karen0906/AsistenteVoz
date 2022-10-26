@@ -10,7 +10,7 @@ pip install PyAudio
 pip install Wave
 pip install transformers
 pip3 install torch torchvision torchaudio
-pip install tf-nightly
+pip install tf-nightly (Solo si tienes GPU)
 pip install sounddevice
 pip install soundfile
 pip install gtts
