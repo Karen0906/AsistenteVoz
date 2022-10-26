@@ -15,7 +15,6 @@ pip install sounddevice
 pip install soundfile
 pip install gtts
 pip install -U scikit-learn
-pip install spacy
 pip install es-core-news-sm
 pip install yellowbrick
 
