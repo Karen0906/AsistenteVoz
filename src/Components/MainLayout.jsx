@@ -20,12 +20,11 @@ function App() {
                         <a class="nav-link" href="/profile">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Login</a>
+                        <a class="nav-link" href="/login">Login</a>
                     </li>
                 </ul>
                 <form class="d-flex">
-                    <button class="btn btn-outline-info mx-1" type="submit" >Home</button>
-                    {/* <input class="form-control mx-1" type="search" placeholder="Search" aria-label="Search"/> */}
+                    <button class="btn btn-outline-info mx-1" type="submit">Home</button>
                     <button class="btn btn-outline-info mx-1" type="submit">Profile</button>
                     <button class="btn btn-outline-info mx-1" type="submit">Login</button>
                     <button class="btn btn-outline-info mx-1" type="submit">Sign up</button>

@@ -1,12 +1,10 @@
 import React from 'react';
 
 function SignupScreen() {
-  console.log('signUp')
-  
   return (
     <>
-      <div className="card m-5 justify-center" style={{width: '450px'}}>
-        <div className="text-center fs-1 mt-2 " style={{color: 'red-100'}}>
+      <div className="card m-5 justify-center" style={{width: '450px', borderRadius: '5%'}}>
+        <div className="text-center fs-1 mt-2 " style={{color: '#121B4F'}}>
           <strong>Registrarse</strong>
         </div>
         <div className="card-body">
@@ -26,7 +24,7 @@ function SignupScreen() {
         </form>
         </div>
         <div className={`text-muted text-center mb-3`}>
-          <button type="submit" className={`btn text-white`} style={{width: '250px', backgroundColor: '#c20076'}}>Aceptar</button>
+          <button type="submit" className={`btn text-white`} style={{width: '250px', backgroundColor: '#d40078'}}>Aceptar</button>
         </div>
       </div>
     </>

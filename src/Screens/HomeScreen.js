@@ -46,7 +46,7 @@ function HomeScreen() {
               </Card>
               <br />
         </div>
-        <div class='col-auto'>  <Card border='warning' style={{ width: '15rem', height:'14rem' }} className='border border-4'>
+        <div class='col-auto'>  <Card style={{ width: '15rem', height:'14rem', borderColor:'#c20000', borderWidth:'4px'}}>
           <Card.Body>
             <Card.Title>4. Ejecuta</Card.Title>
             <Card.Text mb-3>

@@ -2,6 +2,7 @@ import MainLayout from './Components/MainLayout';
 import React from 'react';
 import Profile from './Screens/Profile';
 import SignupScreen from './Screens/SignupScreen';
+import LoginScreen from './Screens/LoginScreen'
 import {
   BrowserRouter as Router,
   Switch,
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path='/' element={<HomeScreen/>}/>
           <Route path='/profile' element={<Profile/>}/>
+          <Route path='/login' element={<SignupScreen/>}/>
         </Routes>
       </Router>
     </div>
