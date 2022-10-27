@@ -8,7 +8,7 @@ import os
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from yellowbrick.cluster import KElbowVisualizer
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, SpectralClustering
 
 with open('DB.csv', 'r', encoding='UTF-8', newline='') as f:
     reader = csv.reader(f)
@@ -16,12 +16,43 @@ with open('DB.csv', 'r', encoding='UTF-8', newline='') as f:
 
 l = [re.sub('[\\n]','',value[0]) for value in data]
 
+l = [i.split('. ') for i in l]
+
+nl = []
+
+for i in l:
+  nl += i
+
 nlp = spacy.load('es_core_news_sm')
 
 tokensl = []
-for corpus in l:
+for corpus in nl:
   doc = nlp(corpus)
-  tokensl.append([t.lemma_.lower().split(' ')[0] for t in doc if t.orth_.isalpha() and not t.is_punct | t.is_stop])
+  tokensl.append([t.lemma_.lower().split(' ')[0] for t in doc if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)])
+
+c = 0
+for j in [i for i,le in enumerate(tokensl) if len(le) == 0]:
+  nl.pop(j-c)
+  tokensl.pop(j-c)
+  c += 1
+
+unique_docs = [tokensl[0]]
+index_rep = []
+for i,doc in enumerate(tokensl[1:]):
+  flagR = True
+  for doc2 in unique_docs:
+    if sorted(doc) == sorted(doc2) and len(doc) == len(doc2):
+      index_rep.append(i)
+      flagR = False
+      break
+  if flagR:
+    unique_docs.append(doc)
+
+c = 0
+for j in index_rep:
+  nl.pop(j-c)
+  tokensl.pop(j-c)
+  c += 1
 
 path = '/'.join(os.path.dirname(__file__).split('\\')[:-1])
 
@@ -50,7 +81,7 @@ plt.ylim(0.0,1.1)
 plt.plot(xi, y, marker='o', linestyle='--', color='b')
 
 plt.xlabel('Número de componentes')
-plt.xticks(np.arange(1, avgwvt.shape[0]+1, step=1)) #change from 0-based array index to 1-based human-readable label
+# plt.xticks(np.arange(1, avgwvt.shape[0]+1, step=1)) #change from 0-based array index to 1-based human-readable label
 plt.ylabel('Varianza cumulativa (%)')
 plt.title('El número de componentes necesarios para explicar la varianza.')
 
@@ -67,12 +98,17 @@ plt.clf()
 pca = PCA(n_components=0.95).fit(avgwvt)
 reduced = pca.transform(avgwvt)
 
-
-model = KMeans()
+kmmodel = KMeans(algorithm='elkan')
 visualizer = KElbowVisualizer(
-    model, k=(2,20)
+    kmmodel, k=(2,avgwvt.shape[0])
 )
 
 visualizer.fit(reduced)
 visualizer.show(outpath="OptimalK.png")
 
+kmmodel = KMeans(visualizer.elbow_value_,algorithm='elkan').fit(reduced)
+
+with open('DBN.csv', 'w', newline='') as f:
+    # using csv.writer method from CSV package
+    write = csv.writer(f)
+    write.writerows([list(i) for i in zip(kmmodel.labels_.tolist(),nl)])
