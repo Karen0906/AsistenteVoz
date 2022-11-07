@@ -100,7 +100,7 @@ reduced = pca.transform(avgwvt)
 
 kmmodel = KMeans(algorithm='elkan')
 visualizer = KElbowVisualizer(
-    kmmodel, k=(2,avgwvt.shape[0])
+    kmmodel, k=(2,avgwvt.shape[0]), metric='distortion', timings=True, distance_metric="manhattan"
 )
 
 visualizer.fit(reduced)
