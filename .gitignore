@@ -29,4 +29,5 @@ Backend/Clasificador/modelo/*.model
 Backend/Clasificador/modelo/*.npy
 Backend/Clasificador/modelo/*.zip
 Backend/Clasificador/modelo/*.txt
+Backend/*/*/__pycache__
 !Backend/Clasificador/LEER - Intrucciones para instalar modelo.txt

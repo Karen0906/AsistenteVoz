@@ -14,21 +14,17 @@ with open('DB.csv', 'r', encoding='UTF-8', newline='') as f:
     reader = csv.reader(f)
     data = list(reader)
 
-l = [re.sub('[\\n]','',value[0]) for value in data]
-
-l = [i.split('. ') for i in l]
+l = [re.sub('[\\n]','',value[0])+" " for value in data]
 
 nl = []
-
 for i in l:
-  nl += i
-
+  nl += [j+'.' for j in i.split('. ') if j]
 nlp = spacy.load('es_core_news_sm')
 
 tokensl = []
 for corpus in nl:
   doc = nlp(corpus)
-  tokensl.append([t.lemma_.lower().split(' ')[0] for t in doc if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)])
+  tokensl.append([t.lemma_.lower() for t in doc if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)])
 
 c = 0
 for j in [i for i,le in enumerate(tokensl) if len(le) == 0]:
@@ -98,7 +94,7 @@ plt.clf()
 pca = PCA(n_components=0.95).fit(avgwvt)
 reduced = pca.transform(avgwvt)
 
-kmmodel = KMeans(algorithm='elkan')
+kmmodel = SpectralClustering()
 visualizer = KElbowVisualizer(
     kmmodel, k=(2,avgwvt.shape[0]), metric='distortion', timings=True, distance_metric="manhattan"
 )
@@ -106,7 +102,7 @@ visualizer = KElbowVisualizer(
 visualizer.fit(reduced)
 visualizer.show(outpath="OptimalK.png")
 
-kmmodel = KMeans(visualizer.elbow_value_,algorithm='elkan').fit(reduced)
+kmmodel = SpectralClustering(visualizer.elbow_value_).fit(reduced)
 
 with open('DBN.csv', 'w', newline='') as f:
     # using csv.writer method from CSV package
