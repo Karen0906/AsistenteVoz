@@ -22,8 +22,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-Backend/*/*.txt
-Backend/*/*.wav
+Backend/*/*/*.txt
+Backend/*/*/*.wav
 Backend/*/__pycache__
 Backend/Clasificador/modelo/*.model
 Backend/Clasificador/modelo/*.npy
