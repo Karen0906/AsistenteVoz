@@ -39,4 +39,4 @@ m = np.flip(np.argsort(m))
 
 T2S("Los temas con los que se puede hablar al respecto son")
 for i in range(3):
-    T2S((str(i+1)+" "+c2c[m[i]]))
+    T2S((str(i+1)+". "+c2c[m[i]]))

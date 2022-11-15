@@ -4,10 +4,14 @@ from S2T import S2T
 from T2S import T2S
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering, AutoModelForSequenceClassification, pipeline
 from datetime import datetime
+import pandas as pd
+from gensim.models import Word2Vec
+import os
+import numpy as np
+import spacy
 
 # Obtener Modelo
 # mrm8488/distill-bert-base-spanish-wwm-cased-finetuned-spa-squad2-es
-# inigopm/beto-base-spanish-squades2
 model = 'inigopm/beto-base-spanish-squades2'
 tokenizer = AutoTokenizer.from_pretrained(model, do_lower_case=False)
 model = AutoModelForQuestionAnswering.from_pretrained(model)
@@ -15,18 +19,32 @@ report = [['REPORTE']]
 # NLP
 nlp = pipeline('question-answering', model=model, tokenizer=tokenizer)
 
+# Obtener Modelo
 modelS = 'finiteautomata/beto-sentiment-analysis'
 tokenizerS = AutoTokenizer.from_pretrained(modelS, do_lower_case=False)
 modelS = AutoModelForSequenceClassification.from_pretrained(modelS)
-
-# Ejemplo de inferencia (pregunta-respuesta)
+# NLP
 nlpS = pipeline('sentiment-analysis', model=modelS, tokenizer=tokenizerS)
 
-def pregunta_respuesta(contexto, nlp):
+Users = {'Jorge Iglesias': 'A01653261'}
 
+path = '/'.join(os.path.dirname(__file__).split('\\')[:-1])
+modelw = Word2Vec.load(path+'/modelo/complete.model')
+nlpw = spacy.load('es_core_news_sm')
+
+df = pd.read_csv('DB.csv')
+
+temas = df.Clases.to_list()
+c2ct = [nlpw(i) for i in temas]
+c2ct = [" ".join([t.lemma_.lower() for t in doc if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)]) for doc in c2ct]
+c2ct = [np.mean(np.array([modelw.wv[i] for i in j.split(' ')]),axis=0) for j in c2ct]
+
+contextos = df.Contextos.to_list()
+
+def pregunta_respuesta(contexto, nlp):
     #Loop preguntas-respuestas:
     global report
-    pregunta = '¿'+S2T()+'?'
+    pregunta = S2T()
     if pregunta != 'No speech detected ¡!¿?':
         respuesta = nlp({'question':pregunta,'context':contexto})['answer']
         report += [[pregunta+':',respuesta]]
@@ -54,14 +72,10 @@ def returnFeedback(inputSen,nlp):
         elif answer == 'NEG':
             return False
         else:
-            T2S('No entendimos su respuesta, intente de nuevo, se recomienda que diga sí o no a la pregunta')
+            T2S('No entendimos su respuesta, intente de nuevo, se recomienda que diga sí o no a la pregunta.')
 
 def checkInt(str):
-    if str[0] in ('-', '+'):
-        return str[1:].isdigit()
     return str.isdigit()
-
-Users = {'Jorge Iglesias': 'A01653261'}
 
 if __name__ == '__main__':
     report += [['Usuario ingresa al sistema']]
@@ -95,23 +109,74 @@ if __name__ == '__main__':
                     T2S('No se encontraron sus datos en nuestra base de datos o son incorrectos, intente de nuevo.')
                     report += [['¿Datos correctos según sistema?:','no']]
             else:
+                T2S('Se repitirá el proceso de recopilación de sus datos.')
                 continue
-        report += [['Usuario hace preguntas al sistema']]
-        contexto = 'La fecha de entrega tu pedido depende de diversos factores. Si tu pedido es nacional, se entregará en un plazo de entre 24 y 48 horas. Si tu pedido es importado, el proveedor debe proporcionar una fecha de entrega que puede ir desde una semana hasta 2 meses dependiendo de las políticas de importación y exportación de ambos paises.'    
-        while True:
-            T2S('¿En qué podemos servirle?')
-            T2S(pregunta_respuesta(contexto,nlp))            
-            respuesta = 'sí' if returnFeedback('¿Nuestra respuesta le ayudó a resolver su problema?',nlpS) else 'no'
-            report += [['¿Datos correctos según usuario?:',respuesta]]
-            respuesta = 'sí' if returnFeedback('¿Quiere seguir haciendo más preguntas?',nlpS) else 'no'
-            report += [['¿Sigue usuario preguntando?:',respuesta]]
-            if respuesta == 'no':
-                T2S('Hasta luego, esperamos haber sido de ayuda...')
-                report += [['Sale Usuario, fin de conversación']]
-                break
-            else:
-                report += [['Usuario hace más preguntas al sistema']]
-
+        report += [['Usuario hace preguntas al sistema']]  
+        T2S('Primero preguntaremos por el tema que quiere tratar para su problema.')
+        respuesta2 = 'sí'
+        while respuesta2 == 'sí':
+            while True:
+                T2S('¿Qué tema quiere hablar?')
+                inputAnswer = nlpw(S2T())
+                report += [['Problema sugerido:',inputAnswer.text]]
+                vector = [t.lemma_.lower() for t in inputAnswer if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)]
+                for i in vector:
+                    try:
+                        modelw.wv[i.lower()]
+                    except:
+                        vector.remove(i)
+                vector = np.mean(np.array([modelw.wv[i.lower()] for i in vector]),axis=0)
+                m = []
+                for i in c2ct:
+                    m.append(np.dot(i,vector)/(np.linalg.norm(i)*np.linalg.norm(vector)))
+                m = np.flip(np.argsort(m))
+                T2S("Los temas con los que se puede hablar al respecto sobre su problema son")
+                for i in range(3):
+                    T2S((str(i+1)+". "+temas[m[i]]))
+                report += [['Temas sugeridos:',', '.join([temas[m[i]] for i in range(3)])]]
+                if returnFeedback('¿De los temas mencionados se encuentra el que busca resolver su problema?',nlpS):
+                    report += [['¿Temas correctos según usuario?:','sí']]
+                    break
+                else:
+                    T2S("Vuelvanos a decir que tema busca de una manera más clara por favor.")
+                    report += [['¿Temas correctos según usuario?:','no']]
+            T2S('De los temas anteriormente mencionados ¿Cual es el número del tema que quiere hablar? Recuerde que los números de los temas son')
+            while True:
+                for i in range(3):
+                    T2S((str(i+1)+". "+temas[m[i]]))
+                index = pregunta_respuesta_inv('¿Cuál número dijo?', nlp,ask=False)
+                if checkInt(index):
+                    index = int(index)
+                    if index > 0 and index < 4:
+                        if returnFeedback('Usted seleccionó '+temas[m[index-1]]+'. ¿És eso correcto?',nlpS):
+                            report += [['Tema seleccionado según usuario:',temas[m[index-1]]]]
+                            break
+                        else:
+                            T2S('Repita el número por favor. Repetiremos el menú de temas mencionado anteriormente.')
+                    else:
+                        T2S('Número se sale de rango. Intente de nuevo seleccionando el tema con su número respectivo')
+                else:
+                    T2S('Texto recibido contiene caracteres y no solo número, intente de nuevo solo mencionando el número del tema que quiere hablar.')
+            contexto = contextos[m[index-1]]
+            respuesta3 = 'no'
+            while respuesta3 == 'no':
+                T2S('¿En qué podemos apoyarlo en cuanto al tema seleccionado?')
+                T2S(pregunta_respuesta(contexto,nlp))            
+                respuesta1 = 'sí' if returnFeedback('¿Nuestra respuesta le ayudó a resolver su problema?',nlpS) else 'no'
+                report += [['¿Datos correctos según usuario?:',respuesta1]]
+                respuesta2 = 'sí' if returnFeedback('¿Quiere seguir haciendo más preguntas?',nlpS) else 'no'
+                report += [['¿Sigue usuario preguntando?:',respuesta2]]
+                if respuesta2 == 'no':
+                    T2S('Hasta luego, esperamos haber sido de ayuda...')
+                    report += [['Sale Usuario, fin de conversación']]
+                    break
+                else:
+                    report += [['Usuario hace más preguntas al sistema']]
+                    if respuesta1 == 'no':
+                        respuesta3 = 'sí' if returnFeedback('¿Quiere cambiar de tema?',nlpS) else 'no'
+                        if respuesta3 == 'sí':
+                            report += [['Usuario cambió de tema']]
+                            break
     except KeyboardInterrupt:
         T2S('Estimado cliente, debido a que no logramos entenderlo, lo enviaremos con un asistente humano, disculpe las molestias')
         report += [['Fin de conversación con asistente virtual']]
