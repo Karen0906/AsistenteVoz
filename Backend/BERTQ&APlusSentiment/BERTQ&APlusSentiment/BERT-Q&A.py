@@ -24,7 +24,7 @@ modelS = 'finiteautomata/beto-sentiment-analysis'
 tokenizerS = AutoTokenizer.from_pretrained(modelS, do_lower_case=False)
 modelS = AutoModelForSequenceClassification.from_pretrained(modelS)
 # NLP
-nlpS = pipeline('sentiment-analysis', model=modelS, tokenizer=tokenizerS)
+nlpS = pipeline('sentiment-analysis', model=modelS, tokenizer=tokenizerS, top_k=3)
 
 Users = {'Jorge Iglesias': 'A01653261'}
 
@@ -64,15 +64,15 @@ def pregunta_respuesta_inv(pregunta, nlp,ask=True):
         raise(KeyboardInterrupt)
 
 def returnFeedback(inputSen,nlp):
-    while True:
-        T2S(inputSen)
-        answer = nlp(S2T())[0]['label']
-        if answer == 'POS':
-            return True
-        elif answer == 'NEG':
-            return False
-        else:
-            T2S('No entendimos su respuesta, intente de nuevo, se recomienda que diga sí o no a la pregunta.')
+  while True:
+    T2S(inputSen)
+    answerL = nlp(S2T())[0]
+    if (answerL[0]['score'] < 0.5) or (answerL[0]['label'] == 'NEU' and answerL[1]['label'] == 'NEG'):
+      T2S('No entendimos su respuesta, intente de nuevo, se recomienda que diga sí o no a la pregunta.')
+    elif answerL[0]['label'] == 'POS' or answerL[1]['label'] == 'POS':
+      return True
+    else:
+      return False
 
 def checkInt(str):
     return str.isdigit()
@@ -116,7 +116,7 @@ if __name__ == '__main__':
         respuesta2 = 'sí'
         while respuesta2 == 'sí':
             while True:
-                T2S('¿Qué tema quiere hablar?')
+                T2S('Referente a su problema ¿Cuál es el tema que piensa podría resolver su situación?')
                 inputAnswer = nlpw(S2T())
                 report += [['Problema sugerido:',inputAnswer.text]]
                 vector = [t.lemma_.lower() for t in inputAnswer if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)]
@@ -144,7 +144,23 @@ if __name__ == '__main__':
             while True:
                 for i in range(3):
                     T2S((str(i+1)+". "+temas[m[i]]))
-                index = pregunta_respuesta_inv('¿Cuál número dijo?', nlp,ask=False)
+                index = pregunta_respuesta_inv('¿Qué número dijo? sólo el número', nlp,ask=False).split(' ')
+                if len(index) > 2:
+                    index = index[0:2]
+                for i in index:
+                    try:
+                        word2num = {'uno':'1','dos':'2', 'tres':'3'}
+                        index = word2num[i]
+                        break
+                    except:
+                        if i.isalpha():
+                            pass
+                        else:
+                            index = i
+                            break
+                if type(index) == list:
+                    if len(index) > 1:
+                        index = index[0]
                 if checkInt(index):
                     index = int(index)
                     if index > 0 and index < 4:
