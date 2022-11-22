@@ -60,6 +60,7 @@ def checkInt(str):
 def main():
     global report
     try:
+        start = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
         T2S('Bienvenido a nuestro sistema de asistente virtual. Espere un poco para que podamos ayudarlo.')
 
         with open('attrs.txt','r') as attr:
@@ -93,13 +94,12 @@ def main():
 
         contextos = df.Contextos.to_list()
 
-        T2S('Primero preguntaremos por el tema que quiere tratar para su problema.')
+        T2S('Primero preguntaremos por el tema que quiere tratar para su problema. Tome en cuenta que solo lo escuchamos cuando se dice la palabra "Escuchando".')
         respuesta2 = 'sí'
         while respuesta2 == 'sí':
             while True:
                 T2S('Referente a su problema ¿Cuál es el tema que piensa podría resolver su situación?')
                 inputAnswer = nlpw(S2T())
-                report += [['Problema sugerido:',inputAnswer.text]]
                 vector = [t.lemma_.lower() for t in inputAnswer if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)]
                 for i in vector:
                     try:
@@ -167,6 +167,7 @@ def main():
                 respuesta2 = 'sí' if returnFeedback('¿Quiere seguir haciendo más preguntas?',nlpS) else 'no'
                 if respuesta2 == 'no':
                     T2S('Hasta luego, esperamos haber sido de ayuda...')
+                    report += [['Conversación',start,datetime.now().strftime("%d_%m_%Y_%H_%M_%S"),'1.','POS']]
                     break
                 else:
                     respuesta3 = 'sí' if returnFeedback('¿Quiere cambiar de tema?',nlpS) else 'no'
@@ -174,6 +175,7 @@ def main():
                         break
     except KeyboardInterrupt:
         T2S('Estimado cliente, debido a que no logramos entenderlo, lo enviaremos con un asistente humano, disculpe las molestias')
+        report += [['Conversación',start,datetime.now().strftime("%d_%m_%Y_%H_%M_%S"),'0','NEG']]
     finally:    
         with open(datetime.now().strftime("%d_%m_%Y_%H_%M_%S")+'.csv', 'w') as f:
             for phrase in report:

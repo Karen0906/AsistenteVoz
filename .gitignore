@@ -34,9 +34,10 @@ Backend/*/*/__pycache__
 
 Official Backend/*.wav
 Official Backend/*.csv
+Official Backend/*.png
 !Official Backend/DB.csv
 !Official Backend/DBC.csv
-!Official Backend/CDB.csv
+!Official Backend/DBN.csv
 Official Backend/modelo/*.model
 Official Backend/modelo/*.npy
 Official Backend/modelo/*.zip
