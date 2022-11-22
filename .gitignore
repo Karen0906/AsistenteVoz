@@ -31,3 +31,14 @@ Backend/*/modelo/*.zip
 Backend/*/modelo/*.txt
 Backend/*/*/__pycache__
 !Backend/Clasificador/LEER - Intrucciones para instalar modelo.txt
+
+Official Backend/*.wav
+Official Backend/*.csv
+!Official Backend/DB.csv
+!Official Backend/DBC.csv
+!Official Backend/CDB.csv
+Official Backend/modelo/*.model
+Official Backend/modelo/*.npy
+Official Backend/modelo/*.zip
+Official Backend/modelo/*.txt
+Official Backend/__pycache__
