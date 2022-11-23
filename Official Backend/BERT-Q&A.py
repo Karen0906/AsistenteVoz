@@ -62,6 +62,7 @@ def main():
     try:
         start = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
         T2S('Bienvenido a nuestro sistema de asistente virtual. Espere un poco para que podamos ayudarlo.')
+        T2S('Én esta llamada se van a recolpilar todos los datos para mejorar el servicio.')
 
         with open('attrs.txt','r') as attr:
             data = attr.read()
