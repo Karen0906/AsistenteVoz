@@ -8,9 +8,18 @@ import os
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from yellowbrick.cluster import KElbowVisualizer
-from sklearn.cluster import KMeans, SpectralClustering
+from sklearn.cluster import KMeans, SpectralClustering, AffinityPropagation
 
-with open('DB.csv', 'r', encoding='UTF-8', newline='') as f:
+def countOccurrence(a):
+  k = {}
+  for j in a:
+    if j in k:
+      k[j] +=1
+    else:
+      k[j] =1
+  return k
+
+with open('DBC.csv', 'r', encoding='UTF-8', newline='') as f:
     reader = csv.reader(f)
     data = list(reader)
 
@@ -52,7 +61,7 @@ for j in index_rep:
 
 path = '/'.join(os.path.dirname(__file__).split('\\')[:-1])
 
-model = Word2Vec.load(path+'/modelo/complete.model')
+model = Word2Vec.load('modelo/complete.model')
 
 def avg_word2vec(doc):
   #remove out-of-vocabulary words
@@ -96,7 +105,7 @@ reduced = pca.transform(avgwvt)
 
 kmmodel = SpectralClustering()
 visualizer = KElbowVisualizer(
-    kmmodel, k=(2,avgwvt.shape[0]), metric='distortion', timings=True, distance_metric="manhattan"
+    kmmodel, k=(2,avgwvt.shape[0]), metric='distortion', timings=True,
 )
 
 visualizer.fit(reduced)
@@ -104,7 +113,54 @@ visualizer.show(outpath="OptimalK.png")
 
 kmmodel = SpectralClustering(visualizer.elbow_value_).fit(reduced)
 
+d = {}
+for i in range(visualizer.elbow_value_):
+  d[i] = []
+
+for i in [list(i) for i in zip(kmmodel.labels_.tolist(),nl)]:
+  d[i[0]] += [i[1]]
+
+d = [' '.join(i) for i in d.values()]
+
+tokensl = []
+for corpus in d:
+  doc = nlp(corpus)
+  tokensl.append([t.lemma_.lower() for t in doc if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)])
+
+names = []
+for j in [countOccurrence(i) for i in tokensl]:
+  names.append(dict(sorted(j.items(), key=lambda item: item[1],reverse=True)))
+  
+i_names = [0 for i in range(len(names))]
+
+flagN = True
+s_names = ['' for i in range(len(names))]
+while flagN:
+  flagN = False
+  for i,n in enumerate(names):
+    name = list(n.keys())[i_names[i]]
+    if name[-2:] in ['ar','er','ir'] or len(name) < 5 or len(name.split(' ')) > 1:
+      i_names[i] += 1
+      flagN = True
+      s_names = ['' for i in range(len(names))]
+      break
+    if name in s_names:
+      for i1,n1 in enumerate(names):
+        if name in list(n1.keys()) and name == s_names[i1]:
+          if n1[name] < n[name]:
+            i_names[i1] += 1
+          else:
+            i_names[i] += 1
+          flagN = True
+          break
+    else:
+      s_names[i] = name
+    if flagN:
+      s_names = ['' for i in range(len(names))]
+      break
+
 with open('DBN.csv', 'w', newline='') as f:
     # using csv.writer method from CSV package
     write = csv.writer(f)
-    write.writerows([list(i) for i in zip(kmmodel.labels_.tolist(),nl)])
+    write.writerows([['Clases','Contextos']])
+    write.writerows([list(i) for i in zip(s_names,d)])
