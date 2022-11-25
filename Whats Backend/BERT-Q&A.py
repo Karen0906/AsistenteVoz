@@ -1,21 +1,19 @@
 # Importar
 
-from S2T import S2T
-from T2S import T2S
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering, AutoModelForSequenceClassification, pipeline
 from datetime import datetime
 import pandas as pd
 from gensim.models import Word2Vec
-import os
 import numpy as np
 import spacy
+from whats import receive,send
 
 report = [['Tipo de pregunta','Pregunta','Respuesta','Probabilidad','Evaluación']]
 
 def pregunta_respuesta(contexto, nlp):
     #Loop preguntas-respuestas:
     global report
-    pregunta = S2T()
+    pregunta = receive()
     if pregunta != 'No speech detected ¡!¿?':
         respuesta = nlp({'question':pregunta,'context':contexto})
         respuesta['question'] = pregunta
@@ -26,8 +24,8 @@ def pregunta_respuesta(contexto, nlp):
 def pregunta_respuesta_inv(pregunta, nlp,ask=True):
     #Loop preguntas-respuestas:
     if ask:
-        T2S(pregunta)
-    contexto = S2T()
+        send(pregunta)
+    contexto = receive()
     if contexto != 'No speech detected ¡!¿?':
         respuesta = nlp({'question':pregunta,'context':contexto})
         respuesta['question'] = contexto
@@ -38,11 +36,11 @@ def pregunta_respuesta_inv(pregunta, nlp,ask=True):
 def returnFeedback(inputSen,nlp):
     global report
     while True:
-            T2S(inputSen)
-            res = S2T()
+            send(inputSen)
+            res = receive()
             answerL = nlp(res)[0]
             if (answerL[0]['score'] < 0.5) or (answerL[0]['label'] == 'NEU' and answerL[1]['label'] == 'NEG'):
-                T2S('No entendimos su respuesta, intente de nuevo, se recomienda que diga sí o no a la pregunta.')
+                send('No entendimos su respuesta, intente de nuevo, se recomienda que diga sí o no a la pregunta.')
             elif answerL[0]['label'] == 'POS' or answerL[1]['label'] == 'POS':
                 if answerL[0]['label'] == 'POS':
                     score = answerL[0]['score']
@@ -61,8 +59,8 @@ def main():
     global report
     try:
         start = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
-        T2S('Bienvenido a nuestro sistema de asistente virtual. Espere un poco para que podamos ayudarlo.')
-        T2S('En esta conversación se van a recopilar todos los datos para mejorar el servicio.')
+        send('Bienvenido a nuestro sistema de asistente virtual. Espere un poco para que podamos ayudarlo.')
+        send('En esta conversación se van a recopilar todos los datos para mejorar el servicio.')
 
         with open('attrs.txt','r') as attr:
             data = attr.read()
@@ -95,12 +93,12 @@ def main():
 
         contextos = df.Contextos.to_list()
 
-        T2S('Primero preguntaremos por el tema que quiere tratar para su problema. Tome en cuenta que solo lo escuchamos cuando se dice la palabra "Escuchando".')
+        send('Primero preguntaremos por el tema que quiere tratar para su problema.')
         respuesta2 = 'sí'
         while respuesta2 == 'sí':
             while True:
-                T2S('Referente a su problema ¿Cuál es el tema que piensa podría resolver su situación?')
-                inputAnswer = nlpw(S2T())
+                send('Referente a su problema ¿Cuál es el tema que piensa podría resolver su situación?')
+                inputAnswer = nlpw(receive())
                 vector = [t.lemma_.lower() for t in inputAnswer if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)]
                 for i in vector:
                     try:
@@ -112,19 +110,15 @@ def main():
                 for i in c2ct:
                     scores.append(np.dot(i,vector)/(np.linalg.norm(i)*np.linalg.norm(vector)))
                 m = np.flip(np.argsort(scores))
-                T2S("Los temas con los que se puede hablar al respecto sobre su problema son")
-                for i in range(3):
-                    T2S((str(i+1)+". "+temas[m[i]]))
-                if returnFeedback('¿De los temas mencionados se encuentra el que busca resolver su problema?',nlpS):
+                send("Los temas con los que se puede hablar al respecto sobre su problema son:\n"+"\n".join([(str(i+1)+". "+temas[m[i]]) for i in range(3)]))
+                if returnFeedback('De los temas mencionados ¿Se encuentra el que busca resolver su problema?',nlpS):
                     report += [['Selección',inputAnswer.text,' '.join([temas[m[i]] for i in range(3)]),' '.join([str(scores[m[i]]) for i in range(3)]),'POS']]
                     break
                 else:
-                    T2S("Vuélvanos  a decir que tema busca de una manera más clara por favor.")
+                    send("Vuélvanos  a decir que tema busca de una manera más clara por favor.")
                     report += [['Selección',inputAnswer.text,', '.join([temas[m[i]] for i in range(3)]),' '.join([str(scores[m[i]]) for i in range(3)]),'NEG']]
-            T2S('De los temas anteriormente mencionados ¿Cuál es el número del tema que quiere hablar? Recuerde que los números de los temas son')
+            send('De los temas anteriormente mencionados ¿Cuál es el número del tema que quiere hablar?')
             while True:
-                for i in range(3):
-                    T2S((str(i+1)+". "+temas[m[i]]))
                 respuesta = pregunta_respuesta_inv('¿Qué número dijo? sólo el número', nlp,ask=False)
                 index = respuesta['answer'].split(' ')
                 if len(index) > 2:
@@ -152,22 +146,22 @@ def main():
                             break
                         else:
 
-                            T2S('Repita el número por favor. Repetiremos el menú de temas mencionado anteriormente.')
+                            send('Repita el número por favor.')
                     else:
-                        T2S('Número se sale de rango. Intente de nuevo seleccionando el tema con su número respectivo')
+                        send('Número se sale de rango. Intente de nuevo seleccionando el tema con su número respectivo.')
                 else:
-                    T2S('Texto recibido contiene caracteres y no solo número, intente de nuevo solo mencionando el número del tema que quiere hablar.')
+                    send('Texto recibido contiene caracteres y no solo número, intente de nuevo solo mencionando el número del tema que quiere hablar.')
             contexto = contextos[m[index-1]]
             respuesta3 = 'no'
             while respuesta3 == 'no':
-                T2S('¿En qué podemos apoyarlo en cuanto al tema seleccionado?')
+                send('¿En qué podemos apoyarlo en cuanto al tema seleccionado?')
                 QA = pregunta_respuesta(contexto,nlp)
-                T2S(QA['answer'])            
+                send(QA['answer'])            
                 respuesta1 = 'POS' if returnFeedback('¿Nuestra respuesta le ayudó a resolver su problema?',nlpS) else 'NEG'
-                report += [['Pregunta y Respuesta',QA['question'],QA['answer'],str(QA['score']),respuesta1]]
+                report += [['Pregunta y Respuesta',QA['question'],QA['answer'].replace(',',';'),str(QA['score']),respuesta1]]
                 respuesta2 = 'sí' if returnFeedback('¿Quiere seguir haciendo más preguntas?',nlpS) else 'no'
                 if respuesta2 == 'no':
-                    T2S('Hasta luego, esperamos haber sido de ayuda...')
+                    send('Hasta luego, esperamos haber sido de ayuda...')
                     report += [['Conversación',start,datetime.now().strftime("%d_%m_%Y_%H_%M_%S"),'1.','POS']]
                     break
                 else:
@@ -175,7 +169,7 @@ def main():
                     if respuesta3 == 'sí':
                         break
     except KeyboardInterrupt:
-        T2S('Estimado cliente, debido a que no logramos entenderlo, lo enviaremos con un asistente humano, disculpe las molestias')
+        send('Estimado cliente, debido a que no logramos entenderlo, lo enviaremos con un asistente humano, disculpe las molestias')
         report += [['Conversación',start,datetime.now().strftime("%d_%m_%Y_%H_%M_%S"),'0','NEG']]
     finally:    
         with open(datetime.now().strftime("%d_%m_%Y_%H_%M_%S")+'.csv', 'w') as f:

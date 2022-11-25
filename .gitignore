@@ -43,3 +43,11 @@ Official Backend/modelo/*.npy
 Official Backend/modelo/*.zip
 Official Backend/modelo/*.txt
 Official Backend/__pycache__
+
+Whats Backend/*.csv
+!Whats Backend/DB.csv
+Whats Backend/modelo/*.model
+Whats Backend/modelo/*.npy
+Whats Backend/modelo/*.zip
+Whats Backend/modelo/*.txt
+Whats Backend/__pycache__
