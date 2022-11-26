@@ -26,6 +26,7 @@ Backend/*/*/*.txt
 Backend/*/*/*.wav
 Backend/*/__pycache__
 Backend/*/modelo/*.model
+Backend/*/modelo/*.kv
 Backend/*/modelo/*.npy
 Backend/*/modelo/*.zip
 Backend/*/modelo/*.txt
@@ -39,6 +40,7 @@ Official Backend/*.png
 !Official Backend/DBC.csv
 !Official Backend/DBN.csv
 Official Backend/modelo/*.model
+Official Backend/modelo/*.kv
 Official Backend/modelo/*.npy
 Official Backend/modelo/*.zip
 Official Backend/modelo/*.txt
@@ -47,6 +49,7 @@ Official Backend/__pycache__
 Whats Backend/*.csv
 !Whats Backend/DB.csv
 Whats Backend/modelo/*.model
+Whats Backend/modelo/*.kv
 Whats Backend/modelo/*.npy
 Whats Backend/modelo/*.zip
 Whats Backend/modelo/*.txt
