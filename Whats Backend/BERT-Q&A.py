@@ -3,7 +3,7 @@
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering, AutoModelForSequenceClassification, pipeline
 from datetime import datetime
 import pandas as pd
-from gensim.models import Word2Vec
+from gensim.models import KeyedVectors
 import numpy as np
 import spacy
 from whats import receive,send
@@ -81,7 +81,7 @@ def main():
         # NLP
         nlpS = pipeline('sentiment-analysis', model=modelS, tokenizer=tokenizerS, top_k=3)
 
-        modelw = Word2Vec.load('modelo/complete.model')
+        modelw = KeyedVectors.load('modelo/complete.kv')
         nlpw = spacy.load('es_core_news_sm')
 
         df = pd.read_csv('DB.csv')
@@ -89,7 +89,7 @@ def main():
         temas = df.Clases.to_list()
         c2ct = [nlpw(i) for i in temas]
         c2ct = [" ".join([t.lemma_.lower() for t in doc if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)]) for doc in c2ct]
-        c2ct = [np.mean(np.array([modelw.wv[i] for i in j.split(' ')]),axis=0) for j in c2ct]
+        c2ct = [np.mean(np.array([modelw[i] for i in j.split(' ')]),axis=0) for j in c2ct]
 
         contextos = df.Contextos.to_list()
 
@@ -102,10 +102,10 @@ def main():
                 vector = [t.lemma_.lower() for t in inputAnswer if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)]
                 for i in vector:
                     try:
-                        modelw.wv[i.lower()]
+                        modelw[i.lower()]
                     except:
                         vector.remove(i)
-                vector = np.mean(np.array([modelw.wv[i.lower()] for i in vector]),axis=0)
+                vector = np.mean(np.array([modelw[i.lower()] for i in vector]),axis=0)
                 scores = []
                 for i in c2ct:
                     scores.append(np.dot(i,vector)/(np.linalg.norm(i)*np.linalg.norm(vector)))
