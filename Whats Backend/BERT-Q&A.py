@@ -97,9 +97,14 @@ def main():
         respuesta2 = 'sí'
         while respuesta2 == 'sí':
             while True:
-                send('Referente a su problema ¿Cuál es el tema que piensa podría resolver su situación?')
-                inputAnswer = nlpw(receive())
-                vector = [t.lemma_.lower() for t in inputAnswer if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)]
+                while True:
+                    send('Referente a su problema ¿Cuál es el tema que piensa podría resolver su situación?')
+                    inputAnswer = nlpw(receive())
+                    vector = [t.lemma_.lower() for t in inputAnswer if t.orth_.isalpha() and len(t.orth_) > 1 and not (t.is_punct or t.is_stop)]
+                    if len(vector) == 0:
+                        send('No entendimos su respuesta, responda la pregunta de una manera más clara y extensa por favor')
+                    else:
+                        break
                 for i in vector:
                     try:
                         modelw[i.lower()]
