@@ -2,13 +2,13 @@ import csv
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import re
-from gensim.models import Word2Vec
+from gensim.models import KeyedVectors
 import spacy
 import os
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from yellowbrick.cluster import KElbowVisualizer
-from sklearn.cluster import KMeans, SpectralClustering, AffinityPropagation
+from sklearn.cluster import KMeans, SpectralClustering
 
 def countOccurrence(a):
   k = {}
@@ -61,11 +61,11 @@ for j in index_rep:
 
 path = '/'.join(os.path.dirname(__file__).split('\\')[:-1])
 
-model = Word2Vec.load('modelo/complete.model')
+model = KeyedVectors.load('modelo/complete.kv')
 
 def avg_word2vec(doc):
   #remove out-of-vocabulary words
-  return np.mean([model.wv[word] for word in doc if word in model.wv.index2word], axis = 0)
+  return np.mean([model[word] for word in doc if word in model.index2word], axis = 0)
 
 avgwv = []
 for tokens in tokensl:
