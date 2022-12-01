@@ -22,16 +22,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-Backend/*/*/*.txt
-Backend/*/*/*.wav
-Backend/*/__pycache__
-Backend/*/modelo/*.model
-Backend/*/modelo/*.kv
-Backend/*/modelo/*.npy
-Backend/*/modelo/*.zip
-Backend/*/modelo/*.txt
-Backend/*/*/__pycache__
-!Backend/Clasificador/LEER - Intrucciones para instalar modelo.txt
+Backend Probes/*/*/*.txt
+Backend Probes/*/*/*.wav
+Backend Probes/*/__pycache__
+Backend Probes/*/modelo/*.model
+Backend Probes/*/modelo/*.kv
+Backend Probes/*/modelo/*.npy
+Backend Probes/*/modelo/*.zip
+Backend Probes/*/modelo/*.txt
+Backend Probes/*/*/__pycache__
+!Backend Probes/Clasificador/LEER - Intrucciones para instalar modelo.txt
 
 Official Backend/*.wav
 Official Backend/*.csv
